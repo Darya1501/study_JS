@@ -1,29 +1,29 @@
 'use strict';
 
-let calculateButton = document.getElementById('#start');
-let addIncomeButton = document.querySelectorAll('button')[0];
-let addExpensesButton = document.querySelectorAll('button')[2];
-let depositCheckbox = document.querySelector('#deposit-check');
-let addIncomeFields = document.querySelectorAll('.additional_income-item');
+const calculateButton = document.getElementById('#start');
+const addIncomeButton = document.querySelectorAll('button')[0];
+const addExpensesButton = document.querySelectorAll('button')[2];
+const depositCheckbox = document.querySelector('#deposit-check');
+const addIncomeFields = document.querySelectorAll('.additional_income-item');
 
-let budgetMonthValue = document.getElementsByClassName('budget_month-value');
-let budgetDayValue = document.getElementsByClassName('budget_day-value');
-let expensesMonthValue = document.getElementsByClassName('expenses_month-value');
-let addIncomeValue = document.getElementsByClassName('additional_income-value');
-let addExpensesValue = document.getElementsByClassName('additional_expenses-value');
-let incomePeriodValue = document.getElementsByClassName('income_period-value');
-let targetMonthValue = document.getElementsByClassName('target_month-value');
+const budgetMonthValue = document.getElementsByClassName('budget_month-value');
+const budgetDayValue = document.getElementsByClassName('budget_day-value');
+const expensesMonthValue = document.getElementsByClassName('expenses_month-value');
+const addIncomeValue = document.getElementsByClassName('additional_income-value');
+const addExpensesValue = document.getElementsByClassName('additional_expenses-value');
+const incomePeriodValue = document.getElementsByClassName('income_period-value');
+const targetMonthValue = document.getElementsByClassName('target_month-value');
 
-let budgetMonthField = document.querySelector('.salary-amount');
-let incomeTitle = document.querySelector('.income-title');
-let incomeAmount = document.querySelector('.income-amount');
-let expensesTitle = document.querySelector('.expenses-title');
-let expensesAmount = document.querySelector('.expenses-amount');
-let additionalExpensesItem = document.querySelector('.additional_expenses-item');
+const budgetMonthField = document.querySelector('.salary-amount');
+const incomeTitle = document.querySelector('.income-title');
+const incomeAmount = document.querySelector('.income-amount');
+const expensesTitle = document.querySelector('.expenses-title');
+const expensesAmount = document.querySelector('.expenses-amount');
+const additionalExpensesItem = document.querySelector('.additional_expenses-item');
 
-let depositAmount = document.querySelector('.deposit-amount');
-let depositPercent = document.querySelector('.deposit-percent');
-let periodSelect = document.querySelector('.period-select');
+const depositAmount = document.querySelector('.deposit-amount');
+const depositPercent = document.querySelector('.deposit-percent');
+const periodSelect = document.querySelector('.period-select');
 
 
 

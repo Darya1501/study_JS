@@ -201,7 +201,7 @@ let appData = {
 
 
 calculateButton.addEventListener('click', function() {
-  if (budgetMonthValue.value.trim() !== '') {
+  if (budgetMonthField.value.trim() !== '') {
     appData.start();
   }
 });

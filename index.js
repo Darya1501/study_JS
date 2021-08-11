@@ -48,6 +48,8 @@ let getUserNum = function(question, possibleAnswer = '') {
   return +answer;
 };
 
+
+
 let appData = {
   budget: 0,
   budgetDay: 0,
@@ -95,6 +97,8 @@ let appData = {
 
   addExpensesBlock: function() {
     let cloneExpensesItems = expensesItems[0].cloneNode(true);
+    cloneExpensesItems.childNodes[0].value = '';
+    cloneExpensesItems.childNodes[1].value = '';
     expensesItems[0].parentNode.insertBefore(cloneExpensesItems, addExpensesButton);
 
     expensesItems = document.querySelectorAll('.expenses-items');
@@ -105,6 +109,8 @@ let appData = {
 
   addIncomeBlock: function() {
     let cloneIncomeItems = incomeItems[0].cloneNode(true);
+    cloneIncomeItems.childNodes[0].value = '';
+    cloneIncomeItems.childNodes[1].value = '';
     incomeItems[0].parentNode.insertBefore(cloneIncomeItems, addIncomeButton);
 
     incomeItems = document.querySelectorAll('.Income-items');
@@ -201,7 +207,7 @@ let appData = {
 
 
 calculateButton.addEventListener('click', function() {
-  if (budgetMonthValue.value.trim() !== '') {
+  if (budgetMonthField.value.trim() !== '') {
     appData.start();
   }
 });
@@ -209,6 +215,7 @@ calculateButton.addEventListener('click', function() {
 addExpensesButton.addEventListener('click', appData.addExpensesBlock);
 addIncomeButton.addEventListener('click', appData.addIncomeBlock);
 
-periodSelect.addEventListener('input', function() {
+periodSelect.addEventListener('input', function(e) {
+  console.log(e);
   periodAmount.textContent = periodSelect.value;
 });

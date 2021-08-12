@@ -3,7 +3,6 @@
 const calculateButton = document.getElementById('start');
 const addIncomeButton = document.querySelectorAll('button')[0];
 const addExpensesButton = document.querySelectorAll('button')[1];
-const depositCheckbox = document.querySelector('#deposit-check');
 const addIncomeFields = document.querySelectorAll('.additional_income-item');
 
 const budgetMonthValue = document.getElementsByClassName('budget_month-value')[0];
@@ -18,6 +17,7 @@ const budgetMonthField = document.querySelector('.salary-amount');
 const additionalExpensesItem = document.querySelector('.additional_expenses-item');
 const targetAmount = document.querySelector('.target-amount');
 
+const depositCheckbox = document.querySelector('#deposit-check');
 const depositAmount = document.querySelector('.deposit-amount');
 const depositPercent = document.querySelector('.deposit-percent');
 
@@ -26,28 +26,6 @@ const periodAmount = document.querySelector('.period-amount');
 
 let expensesItems = document.querySelectorAll('.expenses-items');
 let incomeItems = document.querySelectorAll('.income-items');
-
-
-let isNumber = function(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-};
-
-let getUserString = function(question, possibleAnswer = '') {
-  let answer;
-  do {
-    answer = prompt(question, possibleAnswer);
-  } while (answer.trim() === '' || isNumber(answer));
-  return answer;
-};
-
-let getUserNum = function(question, possibleAnswer = '') {
-  let answer;
-  do {
-    answer = prompt(question, possibleAnswer);
-  } while (!isNumber(answer));
-  return +answer;
-};
-
 
 
 let appData = {
@@ -191,14 +169,14 @@ let appData = {
     }
   },
 
-  getInfoDeposit: function() {
-    if(appData.deposit) {
-      let percent = getUserNum('Какой годовой процент?', 10);
-      let money = getUserNum('Какая сумма депозита?', 10000);
-      appData.percentDeposit = percent;
-      appData.moneyDeposit = money;
-    }
-  },
+  // getInfoDeposit: function() {
+  //   if(appData.deposit) {
+  //     let percent = getUserNum('Какой годовой процент?', 10);
+  //     let money = getUserNum('Какая сумма депозита?', 10000);
+  //     appData.percentDeposit = percent;
+  //     appData.moneyDeposit = money;
+  //   }
+  // },
 
   calcSavedMoney: function() {
     return appData.budgetMonth * periodSelect.value; 
@@ -218,4 +196,34 @@ addIncomeButton.addEventListener('click', appData.addIncomeBlock);
 periodSelect.addEventListener('input', function(e) {
   console.log(e);
   periodAmount.textContent = periodSelect.value;
+});
+
+
+// Пункты 2 и 3 из усложненного задания
+let validateField = function(field) {
+
+  if (field.getAttribute('placeholder') === 'Наименование') {
+
+    let validChars = 'АБВГДЕЁЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯабвгдеёжзиклмнопрстуфхцчшщъыьэюя.,!? ';
+    field.addEventListener('keydown', function(event) {
+      if (validChars.indexOf(event.key) === -1 && event.key !== 'Backspace') {
+        event.preventDefault();
+      } 
+    });
+
+  } else if (field.getAttribute('placeholder') === 'Сумма') {
+
+    let validChars = '0123456789';
+    field.addEventListener('keydown', function(event) {
+      if (validChars.indexOf(event.key) === -1 && event.key !== 'Backspace') {
+        event.preventDefault();
+      } 
+    });
+
+  }
+};
+
+const inputs = document.querySelectorAll('input');
+inputs.forEach(function(item) {
+  validateField(item);
 });

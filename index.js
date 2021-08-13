@@ -111,7 +111,7 @@ let appData = {
 
     const input = document.querySelectorAll('.data input[type="text"]');
     input.forEach(function(item) {
-      item.readOnly = 'false';
+      item.removeAttribute('readonly');
       item.style.cursor = 'auto';
       item.removeAttribute('title');
       item.value = '';
@@ -119,6 +119,18 @@ let appData = {
 
     periodSelect.value = 1;
     periodAmount.textContent = 1;
+
+    expensesItems.forEach(function(item, i, arr) {
+     if (i !== 0) {
+       item.remove();
+     }
+    });
+
+    incomeItems.forEach(function(item, i, arr) {
+     if (i !== 0) {
+       item.remove();
+     }
+    });
 
     startButton.style.display = 'block';
     cancelButton.style.display = 'none';

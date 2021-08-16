@@ -271,6 +271,29 @@ AppData.prototype.eventsListeners = function() {
     periodAmount.textContent = periodSelect.value;
   });
 
+  AppData.prototype.validateField = function(field) {
+
+    if (field.getAttribute('placeholder') === 'Наименование') {
+  
+      let validChars = 'АБВГДЕЁЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯабвгдеёжзиклмнопрстуфхцчшщъыьэюя.,!? ';
+      field.addEventListener('keydown', function(event) {
+        if (validChars.indexOf(event.key) === -1 && event.key !== 'Backspace') {
+          event.preventDefault();
+        } 
+      });
+  
+    } else if (field.getAttribute('placeholder') === 'Сумма') {
+  
+      let validChars = '0123456789';
+      field.addEventListener('keydown', function(event) {
+        if (validChars.indexOf(event.key) === -1 && event.key !== 'Backspace') {
+          event.preventDefault();
+        } 
+      });
+  
+    }
+  };
+
 };
 
 
@@ -278,32 +301,7 @@ const appData = new AppData();
 appData.eventsListeners();
 
 
-
-// Нужно ли переносить валидацию полей в AppData?
-let validateField = function(field) {
-
-  if (field.getAttribute('placeholder') === 'Наименование') {
-
-    let validChars = 'АБВГДЕЁЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯабвгдеёжзиклмнопрстуфхцчшщъыьэюя.,!? ';
-    field.addEventListener('keydown', function(event) {
-      if (validChars.indexOf(event.key) === -1 && event.key !== 'Backspace') {
-        event.preventDefault();
-      } 
-    });
-
-  } else if (field.getAttribute('placeholder') === 'Сумма') {
-
-    let validChars = '0123456789';
-    field.addEventListener('keydown', function(event) {
-      if (validChars.indexOf(event.key) === -1 && event.key !== 'Backspace') {
-        event.preventDefault();
-      } 
-    });
-
-  }
-};
-
 const inputs = document.querySelectorAll('input');
 inputs.forEach(function(item) {
-  validateField(item);
+  appData.validateField(item);
 });

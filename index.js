@@ -57,12 +57,10 @@ class AppData {
   start() {
     this.budget = +salary.value;
 
-    this.getExpenses();
-    this.getIncome();
+    this.getExpInc();
     this.getExpensesMonth();
     this.getBudget();
-    this.getAddExpenses();
-    this.getAddIncome();
+    this.getAddExpInc();
   
     this.showResult();
   
@@ -73,6 +71,9 @@ class AppData {
       item.style.backgroundColor = '#f5efed';
       item.setAttribute('title', 'Сначала сбросте результат');
     });
+
+    addIncomeButton.style.display = 'none';
+    addExpensesButton.style.display = 'none';
   
     startButton.style.display = 'none';
     cancelButton.style.display = 'block';
@@ -134,86 +135,67 @@ class AppData {
         item.remove();
       }
     });
+
+    addIncomeButton.style.display = 'block';
+    addExpensesButton.style.display = 'block';
   
     startButton.style.display = 'block';
     cancelButton.style.display = 'none';
   }
 
-  // Добавляем новые поля в блоке "Обязательные расходы"
-  addExpensesBlock() {
-    const cloneExpensesItems = expensesItems[0].cloneNode(true);
-    cloneExpensesItems.childNodes[1].value = '';
-    cloneExpensesItems.childNodes[3].value = '';
-    expensesItems[0].parentNode.insertBefore(cloneExpensesItems, addExpensesButton);
-    
-    expensesItems = document.querySelectorAll('.expenses-items');
-    if (expensesItems.length === 3) {
-      addExpensesButton.style.display = 'none';
+  // Добавляем новые поля "Дополнительный доход" или "Обязательные расходы"
+  addNewBlock(button) {
+    console.log('button: ', button);
+    const startStr = button.classList[1].split('_')[0];
+    let items = document.querySelectorAll(`.${startStr}-items`);
+
+    const cloneItems = items[0].cloneNode(true);
+    cloneItems.childNodes[1].value = '';
+    cloneItems.childNodes[3].value = '';
+    items[0].parentNode.insertBefore(cloneItems, button);
+
+    if (items.length === 2) {
+      button.style.display = 'none';
     }
     this.validateField();
   }
 
-  // Добавляем новые поля "Дополнительный доход"
-  addIncomeBlock() {
-    const cloneIncomeItems = incomeItems[0].cloneNode(true);
-    cloneIncomeItems.childNodes[1].value = '';
-    cloneIncomeItems.childNodes[3].value = '';
-    incomeItems[0].parentNode.insertBefore(cloneIncomeItems, addIncomeButton);
-
-    incomeItems = document.querySelectorAll('.income-items');
-    if (incomeItems.length === 3) {
-      addIncomeButton.style.display = 'none';
-    }
-    this.validateField();
-  }
-
-  // Получение значений из блока "Обязательные расходы"
-  getExpenses() {
-    expensesItems.forEach((item) => {
-      const itemExpenses = item.querySelector('.expenses-title').value;
-      const cashExpenses = item.querySelector('.expenses-amount').value;
-
-      if (itemExpenses !== '' && cashExpenses !== '') {
-        this.expenses[itemExpenses] = +cashExpenses;
+  // Получение значений "Обязательные расходы" и "Дополнительный доход"
+  getExpInc() {
+    const count = item => {
+      const startStr = item.className.split('-')[0];
+      const itemTitle = item.querySelector(`.${startStr}-title`).value;
+      const itemAmount = item.querySelector(`.${startStr}-amount`).value;
+      if (itemTitle !== '' && itemAmount !== '') {
+        this[startStr][itemTitle] = +itemAmount;
       }
-    });
-  }
-
-  // Получение значений из блока "Дополнительный доход"
-  getIncome() {
-    incomeItems.forEach((item) => {
-      const itemIncome = item.querySelector('.income-title').value;
-      const cashIncome = item.querySelector('.income-amount').value;
-
-      if (itemIncome !== '' && cashIncome !== '') {
-        this.income[itemIncome] = +cashIncome;
-      }
-    });
-
+    };
+    expensesItems.forEach(count);
+    incomeItems.forEach(count);
     for (const key in this.income) {
       this.incomeMonth += +this.income[key];
     }
   }
 
-  // Получение списка возможных источников дохода
-  getAddExpenses() {
-    const addExpenses = addExpensesItem.value.split(',');
-    addExpenses.forEach((item) => {
-      item = item.trim();
+  //  Получение списков возможных расходов и доходов
+  getAddExpInc() {
+    const write = (item) => {
+      let array;
+      if (typeof(item) === 'string') {
+        item = item.trim();
+        array = 'addExpenses';
+      } else {
+        item = item.value.trim();
+        array = 'addIncome';
+      }
       if (item !== '') {
-        this.addExpenses.push(item);
+        this[array].push(item);
       }
-    });
-  }
-
-  // Получение списка возможных расходов
-  getAddIncome() {
-    addIncomeFields.forEach((item) => {
-      const itemValue = item.value.trim();
-      if (itemValue !== '') {
-        this.addIncome.push(itemValue);
-      }
-    });
+    };
+    const addExpenses = addExpensesItem.value.split(',');
+    addExpenses.forEach(write);
+    addIncomeFields.forEach(write);
+    
   }
 
   // Вычисление суммы расходов
@@ -261,18 +243,19 @@ class AppData {
     });
 
     cancelButton.addEventListener('click', this.reset.bind(this));
-    addExpensesButton.addEventListener('click', this.addExpensesBlock.bind(this));
-    addIncomeButton.addEventListener('click', this.addIncomeBlock.bind(this));
+    addExpensesButton.addEventListener('click', this.addNewBlock.bind(this, addExpensesButton));
+    addIncomeButton.addEventListener('click', this.addNewBlock.bind(this, addIncomeButton));
     periodSelect.addEventListener('input', () => {
       periodAmount.textContent = periodSelect.value;
     });
   }
 
+  // Валидация полей
   validateField() {
     const inputs = document.querySelectorAll('input'); 
     inputs.forEach((field) => {
       if (field.getAttribute('placeholder') === 'Наименование') {
-        const validChars = 'АБВГДЕЁЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯабвгдеёжзиклмнопрстуфхцчшщъыьэюя.,!? ';
+        const validChars = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя.,!? ';
         field.addEventListener('keydown', (event) => {
           if (validChars.indexOf(event.key) === -1 && event.key !== 'Backspace') {
             event.preventDefault();

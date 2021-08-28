@@ -1,5 +1,3 @@
-
-
 // Кнопки управления программой
 const startButton = document.getElementById('start');
 const cancelButton = document.getElementById('cancel');
@@ -37,6 +35,32 @@ const addExpensesValue = document.getElementsByClassName('additional_expenses-va
 const incomePeriodValue = document.getElementsByClassName('income_period-value')[0];
 const targetMonthValue = document.getElementsByClassName('target_month-value')[0];
 
+const setCookie = (key, value, del) => {
+  const expires = new Date();
+  let month = expires.getMonth();
+  del ? month -= 5 :  month += 2;
+  expires.setMonth(month);
+  document.cookie = key + '=' + value + '; expires=' + expires;
+};
+
+const getAllCookie = () => {
+  const cookieMap = new Map();
+  if (document.cookie) {
+    const cookieString = document.cookie.split(";");
+    cookieString.forEach(cookie => {
+      cookie = cookie.split('=');
+      cookieMap.set(cookie[0].trim(), cookie[1].trim());
+    });
+  }
+  return cookieMap;
+};
+
+const deleteAllCookie = () => {
+  const cookies = getAllCookie();
+  for (const key of cookies.keys()) {
+    setCookie(key, "", true);
+  }
+};
 
 
 class AppData {
@@ -65,15 +89,16 @@ class AppData {
     this.getAddExpInc();
 
     this.showResult();
+    this.disableAll();
 
-    const input = document.querySelectorAll('.data input[type="text"]');
-    input.forEach(item => {
-      item.readOnly = 'true';
-      item.style.cursor = 'default';
-      item.style.backgroundColor = '#f5efed';
-      item.setAttribute('title', 'Сначала сбросте результат');
-    });
+    localStorage.setItem('resultsAppData', JSON.stringify(this));
+    document.cookie = "isLoad=true; expires=15/09/2021 00:00:00";
+    for (const key in this) {
+      setCookie(key, this[key]);
+    }
+  }
 
+  disableAll() {
     depositCheckbox.disabled = true;
     depositBank.disabled = true;
 
@@ -82,6 +107,34 @@ class AppData {
 
     startButton.style.display = 'none';
     cancelButton.style.display = 'block';
+
+    const input = document.querySelectorAll('.data input[type="text"]');
+    input.forEach(item => {
+      item.readOnly = 'true';
+      item.style.cursor = 'default';
+      item.style.backgroundColor = '#f5efed';
+      item.setAttribute('title', 'Сначала сбросте результат');
+    });
+  }
+
+  enableAll() {
+    const input = document.querySelectorAll('.data input[type="text"]');
+    input.forEach(item => {
+      item.removeAttribute('readonly');
+      item.style.cursor = 'auto';
+      item.removeAttribute('title');
+      item.value = '';
+      item.style.backgroundColor = '#fff';
+    });
+
+    depositCheckbox.disabled = false;
+    depositBank.disabled = false;
+
+    addIncomeButton.style.display = 'block';
+    addExpensesButton.style.display = 'block';
+
+    startButton.style.display = 'block';
+    cancelButton.style.display = 'none';
   }
 
   showResult() {
@@ -117,43 +170,28 @@ class AppData {
     this.percentDeposit = 0;
     this.moneyDeposit = 0;
 
-    const input = document.querySelectorAll('.data input[type="text"]');
-    input.forEach(item => {
-      item.removeAttribute('readonly');
-      item.style.cursor = 'auto';
-      item.removeAttribute('title');
-      item.value = '';
-      item.style.backgroundColor = '#fff';
-    });
-
     periodSelect.value = 1;
     periodAmount.textContent = 1;
 
-    expensesItems.forEach((item, i) => {
+    document.querySelectorAll('.income-items').forEach((item, i) => {
       if (i !== 0) {
         item.remove();
       }
     });
 
-    incomeItems.forEach((item, i) => {
+    document.querySelectorAll('.income-items').forEach((item, i) => {
       if (i !== 0) {
         item.remove();
       }
     });
 
-    depositCheckbox.disabled = false;
-    depositBank.disabled = false;
-
-    addIncomeButton.style.display = 'block';
-    addExpensesButton.style.display = 'block';
-
-    startButton.style.display = 'block';
-    cancelButton.style.display = 'none';
+    this.enableAll();
+    localStorage.clear();
+    deleteAllCookie();
   }
 
   // Добавляем новые поля "Дополнительный доход" или "Обязательные расходы"
   addNewBlock(button) {
-    console.log('button: ', button);
     const startStr = button.classList[1].split('_')[0];
     const items = document.querySelectorAll(`.${startStr}-items`);
 
@@ -328,6 +366,22 @@ class AppData {
 }
 
 
-const appData = new AppData();
-appData.eventsListeners();
-appData.validateField();
+window.addEventListener('DOMContentLoaded', () => {
+
+  const cookie = getAllCookie();
+  const appData = new AppData();
+
+  if (cookie.get('isLoad') && localStorage.getItem('resultsAppData')) {
+    const appDataStorage = JSON.parse(localStorage.getItem('resultsAppData'));
+    if (cookie.size === Object.keys(appDataStorage).length + 1) {
+      Object.assign(appData, appDataStorage);
+      appData.showResult();
+      appData.disableAll();
+    } else {
+      localStorage.clear();
+      deleteAllCookie();
+    }
+  }
+  appData.eventsListeners();
+  appData.validateField();
+});
